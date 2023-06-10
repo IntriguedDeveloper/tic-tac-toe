@@ -41,6 +41,7 @@ export default function App() {
         </div>
         <div className='turnIndicator'>{turn}</div>
         <ResetButton turn={turn} setTurn={setTurn} data_X={data_X} setData_X={setData_X} data_Y={data_Y} setData_Y={setData_Y} pos={9} isWinner={isWinner} setWinner={setWinner} reset = {reset} setReset = {setReset}/>
+        <div className='aboutWrapper'><div className = "about">Made By Ankit Raj</div></div>
       </div>
     
   )
