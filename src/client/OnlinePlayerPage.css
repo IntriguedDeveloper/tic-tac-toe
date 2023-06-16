@@ -1,0 +1,135 @@
+.wrapper{
+    height: 100vh;
+    width:100%;
+    background-color: rgb(9, 20, 18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    width:max-content;
+}
+.matchMaking{
+    height : 500px;
+    width :500px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgb(29, 49, 46);
+}
+@media only screen and (max-width : 510px){
+    .matchMaking{
+        height:400px;
+        width:100vw;
+    }
+}
+.matchMaking *{
+    margin-top: 20px;
+    
+}
+.textInput{
+    height: 50px;
+    width:300px;
+    background-color: rgb(9, 20, 18);
+    border: none;
+    color: white;
+    font-size : 20px;
+    border-radius : 5px;
+    padding: 5px;
+}
+.submit{
+    height: 40px;
+    width:200px;
+    background-color: black;
+    border: none;
+    color:white;
+    border-radius: 2px;
+    font-size: 17px;
+}
+.submit:hover{
+    background-color: rgb(36, 33, 33);
+    cursor:pointer;
+}
+.optionContainer{
+    background-color:inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+    text-align: center;
+    color:white;
+    height: inherit;
+    width:inherit;
+
+}
+
+
+/* CSS */
+.matchMakingRandom {
+  background-color: #060505;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 10px 15px;
+  text-align: center;
+  transition: 200ms;
+  width: 70%;
+  box-sizing: border-box;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.matchMakingRandom:not(:disabled):hover,
+.matchMakingRandom:not(:disabled):focus {
+  outline: 0;
+  background: #13120a;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.2), 0 3px 8px 0 rgba(0,0,0,.15);
+}
+
+.matchMakingRandom:disabled {
+  filter: saturate(0.2) opacity(0.5);
+  -webkit-filter: saturate(0.2) opacity(0.5);
+  cursor: not-allowed;
+}
+.matchMakingSearch{
+    display: flex;
+    flex-direction: column;
+    height:inherit;
+    width:inherit;
+    justify-content: flex-start;
+    align-items: center;
+}
+.playerSearch{
+    height:20px;
+    width:70%;
+    background: rgb(48, 48, 48);
+    color:white;
+    border:2px solid greenyellow;
+    font-size: 16px;
+    border-radius: 5px;
+}
+.playerList{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:70%;
+    margin:0;
+    
+}
+.playerListItem{
+    margin:0;
+    list-style: none;
+    background-color: #13120a;
+    width:100%;
+    padding:0;
+}
