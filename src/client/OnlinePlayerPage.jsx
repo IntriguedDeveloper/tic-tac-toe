@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './OnlinePlayerPage.css';
 import OfflinePlayerPage from './OfflinePlayerPage';
+import { io } from 'socket.io-client';
 
 export default function OnlinePlayerPage() {
+    useEffect(() => {
+        const socket = io("http://localhost:5000");
+        socket.on("message", (eventData) => {
+            const packet = JSON.parse(eventData);
+            console.log(packet);
+        })
+    }, []);
+
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
     const [matchStatus, setMatchStatus] = useState(false);
     const navigate = useNavigate();
     const playerSubmit = () => {
         let playerInformation = {
-            name: name,
-            matchStatus: matchStatus,
+            "name" : name,
+            "matchStatus": matchStatus,
         };
 
         const options = {
@@ -21,9 +30,10 @@ export default function OnlinePlayerPage() {
             },
             body: JSON.stringify(playerInformation),
         };
-
-        fetch('http://localhost:5000/onlinePlayerPage', options)
-            .then(response => response.json())
+        console.log(JSON.parse(options.body));
+        fetch('http://localhost:5000/playerPoolEntry', options)
+            .then(response => response.json()
+            )
             .then(data => {
                 console.log(data);
                 navigate('./playerMatchMaking');
@@ -31,11 +41,14 @@ export default function OnlinePlayerPage() {
             .catch(error => {
                 console.error(error);
             });
+
+
     };
 
     return (
 
         <>
+
             <div className='wrapper'>
                 <div className='content'>
                     <h1 style={{ color: 'white', textAlign: 'center', fontFamily: 'Comic Sans MS' }}>TicTacToe</h1>
@@ -50,24 +63,24 @@ export default function OnlinePlayerPage() {
                             <Route path="/playerMatchMaking" element={<>
                                 <div className='optionContainer'>
                                     <button className='matchMakingRandom'>Random</button>
-                                    <a style = {{fontSize:"22px", fontFamily:"comic sans ms"}}>Or</a>
+                                    <a style={{ fontSize: "22px", fontFamily: "comic sans ms" }}>Or</a>
                                     <div className='matchMakingSearch'>
-                                        <input type = "text" className='playerSearch' placeholder='Search for Players'></input>
+                                        <input type="text" className='playerSearch' placeholder='Search for Players'></input>
                                         <ul className='playerList'>
-                                            <li className = 'playerListItem'>Arnab</li>
-                                            <li className = 'playerListItem'>Penguin</li>
-                                            <li className = 'playerListItem'>Arnab</li>
-                                            <li className = 'playerListItem'>Sharma</li>
-                                            <li className = 'playerListItem'>Gobar</li>
-                                            <li className = 'playerListItem'>Bruh</li>
-                                            <li className = 'playerListItem'>Bruh</li>
-                                            <li className = 'playerListItem'>Arnab</li>
-                                            <li className = 'playerListItem'>Penguin</li>
-                                            <li className = 'playerListItem'>Arnab</li>
-                                            <li className = 'playerListItem'>Sharma</li>
-                                            <li className = 'playerListItem'>Gobar</li>
-                                            <li className = 'playerListItem'>Bruh</li>
-                                            <li className = 'playerListItem'>Bruh</li>
+                                            <li className='playerListItem'>Arnab</li>
+                                            <li className='playerListItem'>Penguin</li>
+                                            <li className='playerListItem'>Arnab</li>
+                                            <li className='playerListItem'>Sharma</li>
+                                            <li className='playerListItem'>Gobar</li>
+                                            <li className='playerListItem'>Bruh</li>
+                                            <li className='playerListItem'>Bruh</li>
+                                            <li className='playerListItem'>Arnab</li>
+                                            <li className='playerListItem'>Penguin</li>
+                                            <li className='playerListItem'>Arnab</li>
+                                            <li className='playerListItem'>Sharma</li>
+                                            <li className='playerListItem'>Gobar</li>
+                                            <li className='playerListItem'>Bruh</li>
+                                            <li className='playerListItem'>Bruh</li>
                                         </ul>
                                     </div>
                                 </div>
