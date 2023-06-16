@@ -6,10 +6,12 @@ import OfflinePlayerPage from './OfflinePlayerPage';
 export default function OnlinePlayerPage() {
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
+    const [matchStatus, setMatchStatus] = useState(false);
     const navigate = useNavigate();
     const playerSubmit = () => {
-        const playerInformation = {
+        let playerInformation = {
             name: name,
+            matchStatus: matchStatus,
         };
 
         const options = {
@@ -52,6 +54,13 @@ export default function OnlinePlayerPage() {
                                     <div className='matchMakingSearch'>
                                         <input type = "text" className='playerSearch' placeholder='Search for Players'></input>
                                         <ul className='playerList'>
+                                            <li className = 'playerListItem'>Arnab</li>
+                                            <li className = 'playerListItem'>Penguin</li>
+                                            <li className = 'playerListItem'>Arnab</li>
+                                            <li className = 'playerListItem'>Sharma</li>
+                                            <li className = 'playerListItem'>Gobar</li>
+                                            <li className = 'playerListItem'>Bruh</li>
+                                            <li className = 'playerListItem'>Bruh</li>
                                             <li className = 'playerListItem'>Arnab</li>
                                             <li className = 'playerListItem'>Penguin</li>
                                             <li className = 'playerListItem'>Arnab</li>

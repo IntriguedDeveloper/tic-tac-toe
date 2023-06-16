@@ -24,7 +24,7 @@
 }
 @media only screen and (max-width : 510px){
     .matchMaking{
-        height:400px;
+        height:500px;
         width:100vw;
     }
 }
@@ -109,7 +109,7 @@
     align-items: center;
 }
 .playerSearch{
-    height:20px;
+    height:30px;
     width:70%;
     background: rgb(48, 48, 48);
     color:white;
@@ -117,19 +117,47 @@
     font-size: 16px;
     border-radius: 5px;
 }
-.playerList{
+.playerList {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    width:70%;
-    margin:0;
-    
-}
-.playerListItem{
-    margin:0;
+    width: 70%;
+    height: 291px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    margin-top: 2px;
+  }
+  
+  .playerListItem {
+    margin: 0;
     list-style: none;
     background-color: #13120a;
-    width:100%;
-    padding:0;
-}
+    width: 100%;
+    padding: 0;
+    min-height: 40px; /* Use min-height instead of height */
+    border-top: 2px solid rgb(98, 98, 198);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
