@@ -5,23 +5,22 @@ import OfflinePlayerPage from './OfflinePlayerPage';
 import { io } from 'socket.io-client';
 
 export default function OnlinePlayerPage() {
-    useEffect(() => {
-        const socket = io("http://localhost:5000");
-        socket.on("message", (eventData) => {
-            const packet = JSON.parse(eventData);
-            console.log(packet);
-        })
-    }, []);
+    const socket = io("http://localhost:5000");
+
 
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
     const [placeholder, setPlaceholder] = useState('Search');
-
+    const [queriedName, setQueriedName] = useState('');
     const [matchStatus, setMatchStatus] = useState(false);
     const navigate = useNavigate();
+    useEffect(() => {
+        console.log("Query typed")
+        socket.emit("playerSearchQuery");
+    }, [queriedName]);
     const playerSubmit = () => {
         let playerInformation = {
-            "name" : name,
+            "name": name,
             "matchStatus": matchStatus,
         };
 
@@ -37,15 +36,15 @@ export default function OnlinePlayerPage() {
             .then(response => response.json()
             )
             .then(data => {
-                if(data.permission == true){
+                if (data.permission == true) {
                     navigate('./playerMatchMaking');
-                    
+
                 }
-                
-                else{
+
+                else {
                     alert("Player Name already taken");
                 }
-                
+
             })
             .catch(error => {
                 console.error(error);
@@ -73,25 +72,11 @@ export default function OnlinePlayerPage() {
                                 <div className='optionContainer'>
                                     <button className='matchMakingRandom'>Random</button>
                                     <a style={{ fontSize: "22px", fontFamily: "comic sans ms" }}>Or</a>
-                                    <div className='matchMakingSearch'>
-                                        <input type="text" className='playerSearch' placeholder='Search for Players'></input>
-                                        <ul className='playerList'>
-                                            <li className='playerListItem'>Arnab</li>
-                                            <li className='playerListItem'>Penguin</li>
-                                            <li className='playerListItem'>Arnab</li>
-                                            <li className='playerListItem'>Sharma</li>
-                                            <li className='playerListItem'>Gobar</li>
-                                            <li className='playerListItem'>Bruh</li>
-                                            <li className='playerListItem'>Bruh</li>
-                                            <li className='playerListItem'>Arnab</li>
-                                            <li className='playerListItem'>Penguin</li>
-                                            <li className='playerListItem'>Arnab</li>
-                                            <li className='playerListItem'>Sharma</li>
-                                            <li className='playerListItem'>Gobar</li>
-                                            <li className='playerListItem'>Bruh</li>
-                                            <li className='playerListItem'>Bruh</li>
-                                        </ul>
-                                    </div>
+
+                                    <input type="text" className='roomCode' placeholder='Enter Room Code' onChange={setQueriedName}></input>
+                                    <a style={{ fontSize: "22px", fontFamily: "comic sans ms" }}>Or</a>
+                                    <button className='createRoom'>Create a room</button>
+
                                 </div>
                             </>} />
                         </Routes>

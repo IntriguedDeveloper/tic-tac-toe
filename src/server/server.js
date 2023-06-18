@@ -19,7 +19,7 @@ app.post('/playerPoolEntry', (req, res) => {
         message : "Player Object received succesfully",
         permission : true,
     }
-    if(searchArray(playerPool, req.body.name)){
+    if(searchArray(playerPool, req.body.name).isPresent){
         response.permission = false;
         response.message = "Player Name Already Taken";
     }
@@ -38,14 +38,17 @@ server.listen(5000, () => {
         socket.send(JSON.stringify({
             message : "hello from server",
         }))
-    })
+        
+    });
+    
 });
 function searchArray(array, element){
+    let searchResults = {
+        isPresent : false,
+        index : null,
+    };
     for(let i = 0; i<=array.length; i++){
-        let searchResults = {
-            isPresent : false,
-            index : null,
-        };
+        
         if(array[i] == element){
             searchResults = {
                 isPresent : true,

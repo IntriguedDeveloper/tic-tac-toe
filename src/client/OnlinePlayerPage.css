@@ -69,7 +69,7 @@
 }
 
 
-/* CSS */
+
 .matchMakingRandom {
   background-color: #060505;
   border-radius: 5px;
@@ -100,15 +100,8 @@
   -webkit-filter: saturate(0.2) opacity(0.5);
   cursor: not-allowed;
 }
-.matchMakingSearch{
-    display: flex;
-    flex-direction: column;
-    height:inherit;
-    width:inherit;
-    justify-content: flex-start;
-    align-items: center;
-}
-.playerSearch{
+
+.roomCode{
     height:30px;
     width:70%;
     background: rgb(48, 48, 48);
@@ -117,31 +110,7 @@
     font-size: 16px;
     border-radius: 5px;
 }
-.playerList {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    width: 70%;
-    height: 291px;
-    overflow-y: auto;
-    margin: 0;
-    padding: 0;
-    margin-top: 2px;
-  }
-  
-  .playerListItem {
-    margin: 0;
-    list-style: none;
-    background-color: #13120a;
-    width: 100%;
-    padding: 0;
-    min-height: 40px; /* Use min-height instead of height */
-    border-top: 2px solid rgb(98, 98, 198);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+
   /* width */
 ::-webkit-scrollbar {
     width: 10px;
@@ -160,5 +129,46 @@
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
+  }
+  .createRoom {
+    background-color: #060505;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: center;
+    transition: background-color 200ms, box-shadow 200ms;
+    width: 70%;
+    box-sizing: border-box;
+    border: 0;
+    font-size: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .createRoom::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    border-radius: 50%;
+    transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+    pointer-events: none;
+  }
+  
+  .createRoom:hover::before {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+    transition: width 0.4s ease-in, height 0.4s ease-in, opacity 0.4s ease-in;
   }
   
