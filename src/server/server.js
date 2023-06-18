@@ -17,8 +17,16 @@ app.use(express.json());
 app.post('/playerPoolEntry', (req, res) => {
     let response = {
         message : "Player Object received succesfully",
+        permission : true,
     }
-    playerPool.push(req.body);
+    if(searchArray(playerPool, req.body.name)){
+        response.permission = false;
+        response.message = "Player Name Already Taken";
+    }
+    else{
+        playerPool.push(req.body.name);
+    }
+    
     console.log(playerPool);
     res.status(200).json(response); // Send the response back to the client
 });
@@ -32,3 +40,35 @@ server.listen(5000, () => {
         }))
     })
 });
+function searchArray(array, element){
+    for(let i = 0; i<=array.length; i++){
+        let searchResults = {
+            isPresent : false,
+            index : null,
+        };
+        if(array[i] == element){
+            searchResults = {
+                isPresent : true,
+                index : i,
+            }
+            break;
+        }
+        
+    }
+    return searchResults;
+}
+function matchMaking(playerPool, currentPlayerIndex){
+    let matchedPlayerIndex;
+    let length  = playerPool.length;
+    for(let i = 0; i <= playerPool.length; i++ ){
+        if(length >= 1){
+            if((currentPlayerIndex + 1) <= playerPool.length-1){
+                matchedPlayerIndex = currentPlayerIndex + 1;
+            }
+            else{
+                matchedPlayerIndex = currentPlayerIndex - 1; 
+            }
+        }
+    }
+    return matchedPlayerIndex;
+}

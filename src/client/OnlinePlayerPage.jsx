@@ -15,6 +15,8 @@ export default function OnlinePlayerPage() {
 
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
+    const [placeholder, setPlaceholder] = useState('Search');
+
     const [matchStatus, setMatchStatus] = useState(false);
     const navigate = useNavigate();
     const playerSubmit = () => {
@@ -35,8 +37,15 @@ export default function OnlinePlayerPage() {
             .then(response => response.json()
             )
             .then(data => {
-                console.log(data);
-                navigate('./playerMatchMaking');
+                if(data.permission == true){
+                    navigate('./playerMatchMaking');
+                    
+                }
+                
+                else{
+                    alert("Player Name already taken");
+                }
+                
             })
             .catch(error => {
                 console.error(error);
@@ -56,7 +65,7 @@ export default function OnlinePlayerPage() {
                         <Routes>
                             <Route path="/" element={
                                 <>
-                                    <input type="text" className='textInput' onChange={(event) => { setName(event.target.value) }} />
+                                    <input type="text" className='textInput' onChange={(event) => { setName(event.target.value) }} placeholder={placeholder} />
                                     <button className='submit' onClick={playerSubmit}>Play</button>
                                 </>
                             } />
