@@ -171,4 +171,15 @@
     opacity: 1;
     transition: width 0.4s ease-in, height 0.4s ease-in, opacity 0.4s ease-in;
   }
-  
+  .submitCode{
+    background-color: rgb(209, 209, 196);
+    width : 70px;
+    height:30px;
+    border:none;
+    border-radius : 5px;
+    color:black;
+  }
+  .submitCode:hover{
+    background-color: rgb(128, 128, 118);
+    color:white;
+  }

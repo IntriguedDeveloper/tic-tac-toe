@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './OnlinePlayerPage.css';
-import OfflinePlayerPage from './OfflinePlayerPage';
 import { io } from 'socket.io-client';
+
 
 export default function OnlinePlayerPage() {
     const socket = io("http://localhost:5000");
@@ -11,13 +11,43 @@ export default function OnlinePlayerPage() {
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
     const [placeholder, setPlaceholder] = useState('Search');
-    const [queriedName, setQueriedName] = useState('');
+    const [roomCode, setRoomCode] = useState(null);
     const [matchStatus, setMatchStatus] = useState(false);
     const navigate = useNavigate();
-    useEffect(() => {
-        console.log("Query typed")
-        socket.emit("playerSearchQuery");
-    }, [queriedName]);
+    
+    //*Initiate Random MatchMaking on onClick Event
+    const initiateRandomMatchMaking = () => {
+        fetch('http://localhost:5000/onlinePlayerPage/randomMatchMaking', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: "Initiate Random Matchmaking",
+            name: name,
+          }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      };
+      
+
+    //*Join Room with Room Code
+    const joinRoom = () => {
+
+    }
+
+    const createRoom = () => {
+
+    }
+
+    //*Send playerName to server
+    //*Navigate to playerMatchMaking page on Server Permission
     const playerSubmit = () => {
         let playerInformation = {
             "name": name,
@@ -53,6 +83,8 @@ export default function OnlinePlayerPage() {
 
     };
 
+
+
     return (
 
         <>
@@ -70,12 +102,16 @@ export default function OnlinePlayerPage() {
                             } />
                             <Route path="/playerMatchMaking" element={<>
                                 <div className='optionContainer'>
-                                    <button className='matchMakingRandom'>Random</button>
+                                    <button className='matchMakingRandom' onClick={initiateRandomMatchMaking}>Random</button>
+
                                     <a style={{ fontSize: "22px", fontFamily: "comic sans ms" }}>Or</a>
 
-                                    <input type="text" className='roomCode' placeholder='Enter Room Code' onChange={setQueriedName}></input>
+                                    <input type="text" className='roomCode' placeholder='Enter Room Code' onChange={setRoomCode} ></input>
+                                    <button className='submitCode' onClick={joinRoom}>Go</button>
+
                                     <a style={{ fontSize: "22px", fontFamily: "comic sans ms" }}>Or</a>
-                                    <button className='createRoom'>Create a room</button>
+
+                                    <button className='createRoom' onClick={createRoom}>Create a room</button>
 
                                 </div>
                             </>} />
@@ -87,3 +123,4 @@ export default function OnlinePlayerPage() {
 
     );
 }
+
