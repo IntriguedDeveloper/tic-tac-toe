@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './OnlinePlayerPage.css';
 import { io } from 'socket.io-client';
+import MultiPlayerBoard from './MultiplayerBoard';
 
 
 export default function OnlinePlayerPage() {
@@ -115,6 +116,9 @@ export default function OnlinePlayerPage() {
 
                                 </div>
                             </>} />
+                            <Route path="/multiPlayerBoard" element = {
+                                <MultiPlayerBoard/>
+                            }></Route>
                         </Routes>
                     </div>
                 </div>
