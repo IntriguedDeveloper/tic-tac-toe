@@ -1,0 +1,39 @@
+.multiPlayerWindowWrapper{
+    display: flex;
+    flex-direction: column;
+    
+}
+.boardWrapperMultiPlayer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    row-gap : 20px;
+    background-color: rgb(9, 20, 18);
+    width:max-content;
+    height:max-content;
+    color:white;
+    font-size: 40px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    padding:10px;
+
+}
+
+.playerInfo{
+    background-color: black;
+    color:white;
+    height : 50px;
+    width:100%;
+    font-size: 22px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.playerName{
+    display: inline;
+    
+}
+.playerTurn{
+    margin-right: 5px;
+}

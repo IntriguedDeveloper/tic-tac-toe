@@ -5,6 +5,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 .content{
     display: flex;
@@ -13,8 +14,8 @@
     width:max-content;
 }
 .matchMaking{
-    height : 500px;
-    width :500px;
+    height : 600px;
+    width :600px;
 
     display: flex;
     align-items: center;
@@ -22,16 +23,20 @@
     flex-direction: column;
     background-color: rgb(29, 49, 46);
 }
+.playerNameValue{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 20px;
+}
 @media only screen and (max-width : 510px){
     .matchMaking{
-        height:500px;
+        height:700px;
         width:100vw;
     }
 }
-.matchMaking *{
-    margin-top: 20px;
-    
-}
+
 .textInput{
     height: 50px;
     width:300px;
@@ -164,7 +169,9 @@
     transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
     pointer-events: none;
   }
-  
+  .optionContainer * {
+    margin-top: 20px;
+  }
   .createRoom:hover::before {
     width: 200%;
     height: 200%;

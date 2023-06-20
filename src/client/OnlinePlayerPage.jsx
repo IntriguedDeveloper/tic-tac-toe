@@ -8,7 +8,7 @@ import MultiPlayerBoard from './MultiplayerBoard';
 export default function OnlinePlayerPage() {
     const socket = io("http://localhost:5000");
 
-
+    const [nameInput, setNameInput] = useState("");
     const [name, setName] = useState("");
     const [isSubmitted, setSubmitted] = useState(false);
     const [placeholder, setPlaceholder] = useState('Search');
@@ -18,25 +18,33 @@ export default function OnlinePlayerPage() {
     
     //*Initiate Random MatchMaking on onClick Event
     const initiateRandomMatchMaking = () => {
+        let matchedPlayerName;
+        let matchedPlayerIndex;
         fetch('http://localhost:5000/onlinePlayerPage/randomMatchMaking', {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: "Initiate Random Matchmaking",
-            name: name,
-          }),
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                message: "Initiate Random Matchmaking",
+                name: name,
+            }),
         })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data);
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      };
-      
+            .then(response => response.json())
+            .then(data => {
+                if (data.permission == true) {
+
+                    matchedPlayerName = data.matchedPlayerName;
+                    matchedPlayerIndex = data.matchedPlayerIndex;
+                    navigate('./multiPlayerBoard');
+                }
+                console.log(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
 
     //*Join Room with Room Code
     const joinRoom = () => {
@@ -50,40 +58,49 @@ export default function OnlinePlayerPage() {
     //*Send playerName to server
     //*Navigate to playerMatchMaking page on Server Permission
     const playerSubmit = () => {
-        let playerInformation = {
-            "name": name,
-            "matchStatus": matchStatus,
-        };
+        if(nameInput.length <= 20){
+            setName(nameInput);
+            let playerInformation = {
+                "name": name,
+                "matchStatus": matchStatus,
+            };
 
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(playerInformation),
-        };
-        console.log(JSON.parse(options.body));
-        fetch('http://localhost:5000/playerPoolEntry', options)
-            .then(response => response.json()
-            )
-            .then(data => {
-                if (data.permission == true) {
-                    navigate('./playerMatchMaking');
+            const options = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(playerInformation),
+            };
+            console.log(JSON.parse(options.body));
+            fetch('http://localhost:5000/playerPoolEntry', options)
+                .then(response => response.json()
+                )
+                .then(data => {
+                    if (data.permission == true) {
+                        navigate('./playerMatchMaking');
 
-                }
+                    }
 
-                else {
-                    alert("Player Name already taken");
-                }
+                    else {
+                        alert("Player Name already taken");
+                    }
 
-            })
-            .catch(error => {
-                console.error(error);
-            });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
 
 
-    };
-
+        }
+        else{
+            console.log("Maximum name length exceeded");
+            alert("Max Name length exceeded");
+            
+        }
+        
+    }
+    
 
 
     return (
@@ -97,8 +114,10 @@ export default function OnlinePlayerPage() {
                         <Routes>
                             <Route path="/" element={
                                 <>
-                                    <input type="text" className='textInput' onChange={(event) => { setName(event.target.value) }} placeholder={placeholder} />
-                                    <button className='submit' onClick={playerSubmit}>Play</button>
+                                    <div className='playerNameValue'>
+                                        <input type="text" className='textInput' onChange={(event) => { setNameInput(event.target.value) }} placeholder={placeholder} />
+                                        <button className='submit' onClick={playerSubmit}>Play</button>
+                                    </div>
                                 </>
                             } />
                             <Route path="/playerMatchMaking" element={<>
@@ -116,8 +135,8 @@ export default function OnlinePlayerPage() {
 
                                 </div>
                             </>} />
-                            <Route path="/multiPlayerBoard" element = {
-                                <MultiPlayerBoard/>
+                            <Route path="/multiPlayerBoard" element={
+                                <MultiPlayerBoard />
                             }></Route>
                         </Routes>
                     </div>

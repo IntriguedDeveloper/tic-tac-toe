@@ -40,23 +40,30 @@ app.post('/playerPoolEntry', (req, res) => {
 });
 
 app.post('/onlinePlayerPage/randomMatchMaking', (req, res) => {
-    randomPlayerPool.push(req.body.name);
-    if (randomPlayerPool.length > 1) {
-        let currentPlayerIndex = searchArray(randomPlayerPool, req.body.name).index;
-        console.log(currentPlayerIndex);
-        let matchedPlayerIndex = matchMaking(randomPlayerPool, currentPlayerIndex);
-        let matchedPlayerInfo = {
-            matchedPlayerIndex: matchedPlayerIndex,
-            matchedPlayerName: randomPlayerPool[matchedPlayerIndex],
-        };
-        console.log(matchedPlayerInfo);
-        res.json(matchedPlayerInfo);
+    if(playerPool.includes(req.body.name)){
+        randomPlayerPool.push(req.body.name);
+        if (randomPlayerPool.length > 1) {
+            let currentPlayerIndex = searchArray(randomPlayerPool, req.body.name).index;
+            console.log(currentPlayerIndex);
+            let matchedPlayerIndex = matchMaking(randomPlayerPool, currentPlayerIndex);
+            let matchedPlayerInfo = {
+                matchedPlayerIndex: matchedPlayerIndex,
+                matchedPlayerName: randomPlayerPool[matchedPlayerIndex],
+                permission :true,
+            };
+            console.log(matchedPlayerInfo);
+            res.json(matchedPlayerInfo);
+        }
+        else{
+            res.json({
+                message : "No player available for matchmaking",
+                permission:false,
+            })
+        }
     }
-    else{
-        res.json({
-            message : "No player available for matchmaking",
-        })
-    }
+    
+    
+    
 });
 
 
