@@ -3,12 +3,15 @@ import React from 'react';
 import './OfflinePlayerPage';
 import popSound from './assets/QKTA234-pop.mp3';
 import './MultiPlayerBoard.css';
+import './OnlinePlayerPage';
+import OnlinePlayerPage from './OnlinePlayerPage';
 const GameContext = createContext();
-export default function MultiPlayerBoard() {
+export default function MultiPlayerBoard({name, opponentName, selfTurn, opponentTurn}) {
 
     const [reset, setReset] = useState(false);
     const [turn, setTurn] = useState('X');
-    const [elements, setElements] = useState([]);
+
+   
     return (
         <GameContext.Provider value={{
             turn,
@@ -19,8 +22,8 @@ export default function MultiPlayerBoard() {
             <>
                 <div className='multiPlayerWindowWrapper'>
                     <div className='playerInfo'>
-                        <a className='playerTurn'> X - </a>
-                        <a className='playerName'>Penguinium Oceanisas</a>
+                        <a className='playerTurn'>{opponentTurn} - </a>
+                        <a className='playerName'>{opponentName}</a>
 
                     </div>
                     <div className='boardWrapperMultiPlayer'>
@@ -49,8 +52,8 @@ export default function MultiPlayerBoard() {
 
                     </div>
                     <div className='playerInfo'>
-                        <a className='playerTurn'> O - </a>
-                        <a className='playerName'>Arnab Sinha</a>
+                        <a className='playerTurn'> {selfTurn} - </a>
+                        <a className='playerName'>{name}</a>
 
                     </div>
 
