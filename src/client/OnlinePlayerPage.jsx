@@ -23,7 +23,7 @@ export default function OnlinePlayerPage() {
   const [randomClickCount, setRandomClickCount] = useState(0);
   const [opponentResponse, setOpponentResponse] = useState({});
   useEffect(() => {
-    function onRoomJoined(lobbyArray, emptyRoomName){
+    async function onRoomJoined(lobbyArray, emptyRoomName){
       console.log(lobbyArray);
       const [player1, player2] = lobbyArray;
       setRoomName(emptyRoomName);
@@ -38,7 +38,8 @@ export default function OnlinePlayerPage() {
         setOpponentTurn(player1.turn);
       }
       
-      doNav(true);
+      await doNav(true);
+
       return(() => {
         console.log("Return function ran");
         socket.off('joinedRoom', onRoomJoined);
@@ -65,7 +66,9 @@ export default function OnlinePlayerPage() {
   }, [socket]);
   useEffect(() => {
     if (nav) {
+      doNav(false);
       navigate("./multiPlayerBoard");
+      
     }
   }, [nav, doNav]);
 

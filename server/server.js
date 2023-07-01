@@ -1,17 +1,17 @@
 const express = require("express");
-const {createServer} = require("http");
-const {Server}= require("socket.io");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
 const app = express();
 const path = require("path");
-const {instrument} = require('@socket.io/admin-ui');
+const { instrument } = require("@socket.io/admin-ui");
 app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: ["https://admin.socket.io", "http://127.0.0.1:5173"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 instrument(io, {
@@ -20,7 +20,7 @@ instrument(io, {
 });
 app.use(cors());
 httpServer.listen(5000, () => {
-  console.log("Listening to http://localhost:5000")
+  console.log("Listening to http://localhost:5000");
 });
 
 let playerPool = [];
@@ -33,7 +33,7 @@ app.post("/playerPoolEntry", (req, res) => {
   let response = {
     message: "Player Object received succesfully",
     permission: true,
-  }
+  };
   if (searchArray(playerPool, req.body.name).isPresent) {
     response.permission = false;
     response.message = "Player Name Already Taken";
@@ -46,6 +46,10 @@ app.post("/playerPoolEntry", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  let gamePos = [];
+  let gamePosO = [];
+  let gamePosX = [];
+  let winnerName, winnerTurn;
   socket.on("emit", async (name) => {
     let emptyRoomData = searchForEmptyRooms(roomPool);
     if (emptyRoomData.foundEmptyRoom) {
@@ -56,7 +60,10 @@ io.on("connection", (socket) => {
       let opponentName = roomPool[emptyRoomData.emptyRoomIndex].filter(
         (player) => player !== name
       )[0];
-      let lobbyArray = returnRandomTurn({ name: name, turn: null }, { name: opponentName, turn: null });
+      let lobbyArray = returnRandomTurn(
+        { name: name, turn: null },
+        { name: opponentName, turn: null }
+      );
       io.to(emptyRoomName).emit("joinedRoom", lobbyArray, emptyRoomName);
     } else {
       socket.join(name);
@@ -64,11 +71,26 @@ io.on("connection", (socket) => {
       roomPool.push([name]);
     }
   });
-  socket.on('posInput', (faceDetails) => {
-    console.log("Pos input received from : " + faceDetails.turn + faceDetails.pos);
-    console.log("The room name is : "+ faceDetails.roomName);
-    socket.to(faceDetails.roomName).emit('playerResponse', (faceDetails));
-  })
+  socket.on("posInput", (faceDetails) => {
+    console.log(
+      "Pos input received from : " + faceDetails.turn + faceDetails.pos
+    );
+    console.log("The room name is : " + faceDetails.roomName);
+    if(faceDetails.turn == 'X'){
+      gamePosX.push(faceDetails.pos);
+    }
+    else if(faceDetails.turn == 'O'){
+      gamePosO.push(faceDetails.pos);
+
+    }
+    if(checkWinner(gamePosX)){
+      console.log("Player with turn X has won!");
+    }
+    else if(checkWinner(gamePosO)){
+      console.log("Player with turn O has won!");
+    }
+    socket.to(faceDetails.roomName).emit("playerResponse", faceDetails);
+  });
 });
 
 function searchArray(array, element) {
@@ -141,4 +163,39 @@ function searchRoom(roomPool, roomName) {
     }
   }
   return roomPossession;
+}
+function checkWinner(playerArray) {
+  function searchArray(array, element) {
+    let result;
+    for (let i = 0; i <= array.length - 1; i++) {
+      if (array[i] == element) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+  const winningCombinations = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+    [1, 4, 7],
+    [2, 5, 8],
+    [3, 6, 9],
+    [1, 5, 9],
+    [3, 5, 7],
+  ];
+  for (let i = 0; i < winningCombinations.length; i++) {
+    let posCollection = winningCombinations[i];
+    let arraySearchIncrementCounter = 0;
+    for (let j = 0; j < posCollection.length; j++) {
+      if (searchArray(playerArray, posCollection[j])) {
+        arraySearchIncrementCounter += 1;
+      }
+    }
+    if (arraySearchIncrementCounter == 3) {
+      return true;
+    }
+  }
+  return false;
 }

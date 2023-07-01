@@ -97,20 +97,23 @@ function Square({ pos }) {
       turn: turn,
       roomName: roomName,
     };
-    if (squareClickCounter === 0) {
-      //if its first chance
-      if (turn === "X") {
-        //check if turn is
+    if(value == null){ //check if square isn't occupied
+      if (squareClickCounter === 0) {
+        //if its first chance
+        if (turn === "X") {
+          //check if turn is
+          setValue(turn);
+          socket.emit("posInput", faceDetails);
+        } else {
+          alert("Its not your first chance");
+        }
+      } else {
+        setSquareClickCounter(squareClickCounter + 1);
         setValue(turn);
         socket.emit("posInput", faceDetails);
-      } else {
-        alert("Its not your first chance");
       }
-    } else {
-      setSquareClickCounter(squareClickCounter + 1);
-      setValue(turn);
-      socket.emit("posInput", faceDetails);
     }
+    
   }
 
   function playPopSound() {
