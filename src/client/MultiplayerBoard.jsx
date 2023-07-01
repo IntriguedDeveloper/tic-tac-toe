@@ -16,12 +16,12 @@ export default function MultiPlayerBoard({
   opponentTurn,
   roomName,
   socket,
-  opponentResponse
+  opponentResponse,
 }) {
   const [reset, setReset] = useState(false);
   const [turn, setTurn] = useState(selfTurn);
   const [awaitPlayerResponse, setAwaitPlayerResponse] = useState(false);
-  
+  const [squareClickCounter, setSquareClickCounter] = useState(0);
   return (
     <GameContext.Provider
       value={{
@@ -32,6 +32,8 @@ export default function MultiPlayerBoard({
         socket,
         roomName,
         opponentResponse,
+        squareClickCounter,
+        setSquareClickCounter,
       }}
     >
       <div className="multiPlayerWindowWrapper">
@@ -70,7 +72,8 @@ export default function MultiPlayerBoard({
 }
 
 function Square({ pos }) {
-  const { reset, setReset, roomName, turn, socket, opponentResponse} = useContext(GameContext);
+  const { reset, setReset, roomName, turn, socket, opponentResponse, squareClickCounter, setSquareClickCounter } =
+    useContext(GameContext);
   const [value, setValue] = useState(null);
 
   useEffect(() => {
@@ -79,20 +82,35 @@ function Square({ pos }) {
     }
   }, [reset]);
   useEffect(() => {
-    if(opponentResponse.pos == pos){
+    if (opponentResponse.pos == pos) {
       setValue(opponentResponse.turn);
+      setSquareClickCounter(squareClickCounter + 1);
     }
-  }, [opponentResponse])
+  }, [opponentResponse]);
 
-  function handleClick() {
+  async function handleClick() {
+    
     setReset(false);
-    setValue(turn);
+
     let faceDetails = {
-      pos : pos,
-      turn : turn,
-      roomName : roomName,
+      pos: pos,
+      turn: turn,
+      roomName: roomName,
+    };
+    if (squareClickCounter === 0) {
+      //if its first chance
+      if (turn === "X") {
+        //check if turn is
+        setValue(turn);
+        socket.emit("posInput", faceDetails);
+      } else {
+        alert("Its not your first chance");
+      }
+    } else {
+      setSquareClickCounter(squareClickCounter + 1);
+      setValue(turn);
+      socket.emit("posInput", faceDetails);
     }
-    socket.emit("posInput", (faceDetails));
   }
 
   function playPopSound() {
