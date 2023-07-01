@@ -19,33 +19,59 @@ export default function OnlinePlayerPage() {
   const [opponentTurn, setOpponentTurn] = useState(null);
   const navigate = useNavigate();
   const [nav, doNav] = useState(false);
+  const [roomName, setRoomName] = useState();
+  const [randomClickCount, setRandomClickCount] = useState(0);
+  const [opponentResponse, setOpponentResponse] = useState({});
   useEffect(() => {
-    socket.on("joinedRoom", (lobbyArray) => {
-        console.log(lobbyArray);
-        const [player1, player2] = lobbyArray;
-        if (player1.name === name) {
-          setOpponentName(player2.name);
-          setSelfTurn(player1.turn);
-          setOpponentTurn(player2.turn);
-        } else {
-          setOpponentName(player1.name);
-          setSelfTurn(player2.turn);
-          setOpponentTurn(player1.turn);
-        }
-        doNav(true);
-    });
-    socket.on("insufficientPlayers", () => {
+    function onRoomJoined(lobbyArray, emptyRoomName){
+      console.log(lobbyArray);
+      const [player1, player2] = lobbyArray;
+      setRoomName(emptyRoomName);
+      console.log("In online player page : " + roomName);
+      if (player1.name === name) {
+        setOpponentName(player2.name);
+        setSelfTurn(player1.turn);
+        setOpponentTurn(player2.turn);
+      } else {
+        setOpponentName(player1.name);
+        setSelfTurn(player2.turn);
+        setOpponentTurn(player1.turn);
+      }
+      
+      doNav(true);
+      return(() => {
+        console.log("Return function ran");
+        socket.off('joinedRoom', onRoomJoined);
+        
+      })
+    }
+    function onInsufficientPlayers(message){
       console.log("Insufficient Players");
       alert("Insufficient Player Online");
-    });
-  });
+      return(() => {
+        console.log("Return function ran");
+  
+        socket.off('insufficientPlayers', onInsufficientPlayers);
+      })
+    }
+    function onPlayerResponse(res){
+      console.log(res);
+      setOpponentResponse(res);
+    }
+    socket.on("joinedRoom", onRoomJoined);  
+    socket.on("insufficientPlayers", onInsufficientPlayers);
+    socket.on("playerResponse", onPlayerResponse);
+    
+  }, [socket]);
   useEffect(() => {
     if (nav) {
-      navigate("./MultiPlayerBoard");
+      navigate("./multiPlayerBoard");
     }
   }, [nav, doNav]);
+
   //*Initiate Random MatchMaking on onClick Event
-  const initiateRandomMatchMaking = () => {
+  const initiateRandomMatchMaking = async () => {
+    setRandomClickCount(randomClickCount + 1);
     socket.emit("emit", name);
   };
 
@@ -171,9 +197,17 @@ export default function OnlinePlayerPage() {
                 }
               />
               <Route
-                path="/MultiPlayerBoard"
+                path="/multiPlayerBoard"
                 element={
-                  <MultiPlayerBoard name={name} opponentName={opponentName} selfTurn = {selfTurn} opponentTurn={opponentTurn}/>
+                  <MultiPlayerBoard
+                    name={name}
+                    opponentName={opponentName}
+                    selfTurn={selfTurn}
+                    opponentTurn={opponentTurn}
+                    socket={socket}
+                    roomName={roomName}
+                    opponentResponse = {opponentResponse}
+                  />
                 }
               ></Route>
             </Routes>

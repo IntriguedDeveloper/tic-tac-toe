@@ -1,20 +1,25 @@
 const express = require("express");
-const http = require("http");
-const socketIO = require("socket.io");
+const {createServer} = require("http");
+const {Server}= require("socket.io");
 const cors = require("cors");
 const app = express();
 const path = require("path");
+const {instrument} = require('@socket.io/admin-ui');
 app.use(express.json());
-
-const server = http.createServer(app);
-app.use(express.static(path.join(__dirname, "../dist")));
-const io = socketIO(server, {
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
   cors: {
-    origin: "*",
-  },
+    origin: ["https://admin.socket.io", "http://127.0.0.1:5173"],
+    credentials: true
+  }
+});
+
+instrument(io, {
+  auth: false,
+  mode: "development",
 });
 app.use(cors());
-server.listen(5000, () => {
+httpServer.listen(5000, () => {
   console.log("Listening to http://localhost:5000")
 });
 
@@ -52,13 +57,18 @@ io.on("connection", (socket) => {
         (player) => player !== name
       )[0];
       let lobbyArray = returnRandomTurn({ name: name, turn: null }, { name: opponentName, turn: null });
-      io.to(emptyRoomName).emit("joinedRoom", lobbyArray);
+      io.to(emptyRoomName).emit("joinedRoom", lobbyArray, emptyRoomName);
     } else {
       socket.join(name);
       socket.emit("insufficientPlayers");
       roomPool.push([name]);
     }
   });
+  socket.on('posInput', (faceDetails) => {
+    console.log("Pos input received from : " + faceDetails.turn + faceDetails.pos);
+    console.log("The room name is : "+ faceDetails.roomName);
+    socket.to(faceDetails.roomName).emit('playerResponse', (faceDetails));
+  })
 });
 
 function searchArray(array, element) {
