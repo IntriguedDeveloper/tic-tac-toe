@@ -1,12 +1,12 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import React from "react";
 import "./OfflinePlayerPage";
-import popSound from "./assets/QKTA234-pop.mp3";
+import popSound from "../assets/QKTA234-pop.mp3";
 import "./MultiPlayerBoard.css";
 import "./OnlinePlayerPage";
-import { socket } from "./socket.js";
+import { socket } from "../socket.js";
 import { useNavigate, Routes, Route } from "react-router-dom";
-import Modal from "./components/Modal";
+import Modal from "./Modal";
 const GameContext = createContext();
 
 export default function MultiPlayerBoard({
@@ -39,7 +39,7 @@ export default function MultiPlayerBoard({
         setWinTitle("You've Won");
         setWinnerName(name);
       } else {
-        setWinTitle(`${opponentName},[${opponentTurn}] is the Winner.`);
+        setWinTitle(`${opponentTurn} is the Winner.`);
         setWinnerName(opponentName);
       }
       setOpenModal(true);
@@ -161,11 +161,13 @@ function Square({ pos }) {
       if (squareClickCounter == 0 && turn == "O") {
         alert("Not your first chance");
       } else if (squareClickCounter == 0 && turn == "X") {
+        playPopSound();
         setValue(turn);
         socket.emit("posInput", faceDetails);
         setSquareClickCounter(squareClickCounter + 1);
         setResponseStatus(false);
       } else {
+        playPopSound();
         if (responseStatus == true) {
           socket.emit("posInput", faceDetails);
           setValue(turn);

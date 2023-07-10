@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext, useContext } from 'react';
-import './app.css';
+import './OfflinePlayerPage.css';
 import { Link } from 'react-router-dom';
-import popSound from './assets/QKTA234-pop.mp3';
+import popSound from '../assets/QKTA234-pop.mp3';
 const GameContext = createContext();
 export default function OfflinePlayerPage() {
 

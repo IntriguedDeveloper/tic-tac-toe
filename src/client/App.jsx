@@ -1,9 +1,9 @@
 import { useEffect, useState, createContext, useContext } from "react";
-import "./app.css";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import OnlinePlayerPage from "./OnlinePlayerPage";
+import OnlinePlayerPage from "./components/OnlinePlayerPage";
 import popSound from "./assets/QKTA234-pop.mp3";
-import OfflinePlayerPage from "./OfflinePlayerPage";
+import OfflinePlayerPage from "./components/OfflinePlayerPage";
 import { socket } from "./socket.js";
 export default function App() {
   return (

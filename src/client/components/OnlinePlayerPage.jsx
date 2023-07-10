@@ -7,7 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./OnlinePlayerPage.css";
-import {socket} from './socket.js';
+import {socket} from '../socket.js';
 import MultiPlayerBoard from "./MultiplayerBoard";
 
 export default function OnlinePlayerPage() {
