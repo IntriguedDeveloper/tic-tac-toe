@@ -4,9 +4,9 @@ import "./OfflinePlayerPage";
 import popSound from "./assets/QKTA234-pop.mp3";
 import "./MultiPlayerBoard.css";
 import "./OnlinePlayerPage";
-import OnlinePlayerPage from "./OnlinePlayerPage";
-import io from "socket.io-client";
-
+import { socket } from "./socket.js";
+import { useNavigate, Routes, Route } from "react-router-dom";
+import Modal from "./components/Modal";
 const GameContext = createContext();
 
 export default function MultiPlayerBoard({
@@ -15,13 +15,48 @@ export default function MultiPlayerBoard({
   selfTurn,
   opponentTurn,
   roomName,
-  socket,
   opponentResponse,
 }) {
   const [reset, setReset] = useState(false);
   const [turn, setTurn] = useState(selfTurn);
-  const [awaitPlayerResponse, setAwaitPlayerResponse] = useState(false);
+  const [responseStatus, setResponseStatus] = useState(false);
   const [squareClickCounter, setSquareClickCounter] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [winTitle, setWinTitle] = useState("");
+  const [winnerName, setWinnerName] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (opponentResponse.turn != turn) {
+      setResponseStatus(true);
+    }
+  }, [opponentResponse]);
+  useEffect(() => {
+    //console.log("Use effect ran");
+    function onWinner(turn) {
+      console.log("The turn received is : " + turn);
+      console.log("The self turn is : " + selfTurn);
+      if (turn == selfTurn) {
+        setWinTitle("You've Won");
+        setWinnerName(name);
+      } else {
+        setWinTitle(`${opponentName},[${opponentTurn}] is the Winner.`);
+        setWinnerName(opponentName);
+      }
+      setOpenModal(true);
+    }
+    function onRematch(){
+      setReset(true);
+      setOpenModal(false);
+      setSquareClickCounter(0);
+
+    }
+    socket.on("winnerDeclared", onWinner);
+    socket.on('initRematchClient', onRematch);
+    return () => {
+      socket.off("winnerDeclared", onWinner);
+      socket.off('initRematchClient', onRematch);
+    };
+  }, [socket]);
   return (
     <GameContext.Provider
       value={{
@@ -29,11 +64,13 @@ export default function MultiPlayerBoard({
         setTurn,
         reset,
         setReset,
-        socket,
         roomName,
         opponentResponse,
         squareClickCounter,
         setSquareClickCounter,
+        responseStatus,
+        setResponseStatus,
+        openModal,
       }}
     >
       <div className="multiPlayerWindowWrapper">
@@ -66,54 +103,76 @@ export default function MultiPlayerBoard({
           <a className="playerTurn"> {selfTurn} - </a>
           <a className="playerName">{name}</a>
         </div>
+        {openModal && (
+          <div className="modalWrapper">
+            <Modal
+              winTitle={winTitle}
+              winnerName={winnerName}
+              roomName={roomName}
+            />
+          </div>
+        )}
       </div>
     </GameContext.Provider>
   );
 }
 
 function Square({ pos }) {
-  const { reset, setReset, roomName, turn, socket, opponentResponse, squareClickCounter, setSquareClickCounter } =
-    useContext(GameContext);
+  const {
+    reset,
+    setReset,
+    roomName,
+    turn,
+    opponentResponse,
+    squareClickCounter,
+    setSquareClickCounter,
+    responseStatus,
+    setResponseStatus,
+    openModal,
+  } = useContext(GameContext);
   const [value, setValue] = useState(null);
 
   useEffect(() => {
-    if (reset) {
+    if (reset || openModal) {
       setValue(null);
     }
-  }, [reset]);
+  }, [reset, openModal]);
   useEffect(() => {
-    if (opponentResponse.pos == pos) {
-      setValue(opponentResponse.turn);
-      setSquareClickCounter(squareClickCounter + 1);
+    setValue(null);
+  }, []);
+  useEffect(() => {
+    if (opponentResponse.turn != turn) {
+      if (opponentResponse.pos == pos) {
+        setValue(opponentResponse.turn);
+        setSquareClickCounter(squareClickCounter + 1);
+      }
     }
   }, [opponentResponse]);
-
   async function handleClick() {
-    
     setReset(false);
-
+    //console.log("response status is :  " + responseStatus);
     let faceDetails = {
       pos: pos,
       turn: turn,
       roomName: roomName,
     };
-    if(value == null){ //check if square isn't occupied
-      if (squareClickCounter === 0) {
-        //if its first chance
-        if (turn === "X") {
-          //check if turn is
-          setValue(turn);
-          socket.emit("posInput", faceDetails);
-        } else {
-          alert("Its not your first chance");
-        }
-      } else {
-        setSquareClickCounter(squareClickCounter + 1);
+    if (value == null) {
+      //square is unoccupied
+      if (squareClickCounter == 0 && turn == "O") {
+        alert("Not your first chance");
+      } else if (squareClickCounter == 0 && turn == "X") {
         setValue(turn);
         socket.emit("posInput", faceDetails);
+        setSquareClickCounter(squareClickCounter + 1);
+        setResponseStatus(false);
+      } else {
+        if (responseStatus == true) {
+          socket.emit("posInput", faceDetails);
+          setValue(turn);
+          setResponseStatus(false);
+        }
       }
     }
-    
   }
 
   function playPopSound() {

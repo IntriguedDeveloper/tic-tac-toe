@@ -6,6 +6,8 @@ const app = express();
 const path = require("path");
 const { instrument } = require("@socket.io/admin-ui");
 app.use(express.json());
+
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -19,6 +21,7 @@ instrument(io, {
   mode: "development",
 });
 app.use(cors());
+
 httpServer.listen(5000, () => {
   console.log("Listening to http://localhost:5000");
 });
@@ -27,7 +30,8 @@ let playerPool = [];
 let roomPool = [];
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist", "index.html"));
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../dist', 'assets\index-68c12f9c.js'))
 });
 app.post("/playerPoolEntry", (req, res) => {
   let response = {
@@ -44,12 +48,8 @@ app.post("/playerPoolEntry", (req, res) => {
   console.log(playerPool);
   res.status(200).json(response); // Send the response back to the client
 });
-
-io.on("connection", (socket) => {
-  let gamePos = [];
-  let gamePosO = [];
-  let gamePosX = [];
-  let winnerName, winnerTurn;
+let roomPosMap = new Map();
+io.on("connection", async(socket) => {
   socket.on("emit", async (name) => {
     let emptyRoomData = searchForEmptyRooms(roomPool);
     if (emptyRoomData.foundEmptyRoom) {
@@ -76,21 +76,50 @@ io.on("connection", (socket) => {
       "Pos input received from : " + faceDetails.turn + faceDetails.pos
     );
     console.log("The room name is : " + faceDetails.roomName);
-    if(faceDetails.turn == 'X'){
-      gamePosX.push(faceDetails.pos);
+    if (faceDetails.turn == "X") {
+      if (roomPosMap.get(faceDetails.roomName) == undefined) {
+        roomPosMap.set(faceDetails.roomName, {
+          posX: [],
+          posO: [],
+        });
+        roomPosMap.get(faceDetails.roomName).posX.push(faceDetails.pos);
+      } else {
+        roomPosMap.get(faceDetails.roomName).posX.push(faceDetails.pos);
+      }
+    } else if (faceDetails.turn == "O") {
+      if (roomPosMap.get(faceDetails.roomName) == undefined) {
+        roomPosMap.set(faceDetails.roomName, {
+          posX: [],
+          posO: [],
+        });
+        roomPosMap.get(faceDetails.roomName).posO.push(faceDetails.pos);
+      } else {
+        roomPosMap.get(faceDetails.roomName).posO.push(faceDetails.pos);
+      }
     }
-    else if(faceDetails.turn == 'O'){
-      gamePosO.push(faceDetails.pos);
-
+    if(checkWinner(roomPosMap.get(faceDetails.roomName).posX)){
+      let turn = 'X';
+      io.to(faceDetails.roomName).emit('winnerDeclared', turn);
     }
-    if(checkWinner(gamePosX)){
-      console.log("Player with turn X has won!");
-    }
-    else if(checkWinner(gamePosO)){
-      console.log("Player with turn O has won!");
+    else if(checkWinner(roomPosMap.get(faceDetails.roomName).posO)){
+      let turn = "O";
+      io.to(faceDetails.roomName).emit('winnerDeclared', turn);
     }
     socket.to(faceDetails.roomName).emit("playerResponse", faceDetails);
   });
+  socket.on('resetPlayerCreds', (winnerName, roomName) => {
+    roomPosMap.set(roomName, {
+      posX : [],
+      posO : [],
+    })
+  });
+  socket.on('initRematch', (winnerName, roomName) => {
+    roomPosMap.set(roomName, {
+      posX : [],
+      posO : [],
+    })
+    io.to(roomName).emit('initRematchClient');
+  })
 });
 
 function searchArray(array, element) {

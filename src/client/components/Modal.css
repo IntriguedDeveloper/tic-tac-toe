@@ -1,0 +1,35 @@
+.modalBackground{
+    height: 100%;
+    width: 100%;
+   
+}
+.modalContainer{
+    height: 400px;
+    width: 400px;
+    background-color: rgb(91, 87, 87);
+    color:white;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    row-gap: 50px;
+    border-radius: 5px;
+}
+.buttonContainer button{
+    width: 150px;
+    margin: 10px;
+    height: 50px;
+    border-radius: 5px;
+    border:none;
+    background-color: rgb(25, 30, 25);
+    color: white;
+    font-size: 15px;
+
+}
+.buttonContainer button:hover{
+    background-color: rgb(42, 49, 42);
+    border: 2px solid white;
+    cursor:pointer;
+}
