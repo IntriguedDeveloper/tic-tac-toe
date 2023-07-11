@@ -7,7 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import "./OnlinePlayerPage.css";
-import {socket} from '../socket.js';
+import { socket } from "../socket.js";
 import MultiPlayerBoard from "./MultiplayerBoard";
 
 export default function OnlinePlayerPage() {
@@ -20,7 +20,7 @@ export default function OnlinePlayerPage() {
   const [roomName, setRoomName] = useState();
   const [randomClickCount, setRandomClickCount] = useState(0);
   const [opponentResponse, setOpponentResponse] = useState({});
-
+  const [lobbyResetTrigger, setLobbyResetTrigger] = useState(false);
   useEffect(() => {
     socket.connect();
     function onRoomJoined(lobbyArray, emptyRoomName) {
@@ -45,20 +45,27 @@ export default function OnlinePlayerPage() {
     function onInsufficientPlayers(message) {
       console.log("Insufficient Players");
       alert("Insufficient Player Online");
+      setRandomClickCount(0);
+      console.log("Click Count value reset " + randomClickCount);
     }
     function onPlayerResponse(res) {
       console.log(res);
       setOpponentResponse(res);
     }
+    function onBackToLobby() {
+      setLobbyResetTrigger(true);
+    }
+
+    socket.on("backToLobbyClient", onBackToLobby);
     socket.on("joinedRoom", onRoomJoined);
     socket.on("insufficientPlayers", onInsufficientPlayers);
     socket.on("playerResponse", onPlayerResponse);
-    
+
     return () => {
-      socket.off('joinedRoom', onRoomJoined);
-      socket.off('playerResponse', onPlayerResponse);
-      socket.off('insufficientPlayers', onInsufficientPlayers);
-    }
+      socket.off("joinedRoom", onRoomJoined);
+      socket.off("playerResponse", onPlayerResponse);
+      socket.off("insufficientPlayers", onInsufficientPlayers);
+    };
   }, [socket, randomClickCount, name]);
   useEffect(() => {
     if (nav) {
@@ -69,9 +76,12 @@ export default function OnlinePlayerPage() {
 
   //*Initiate Random MatchMaking on onClick Event
   const initiateRandomMatchMaking = async () => {
-    setRandomClickCount(randomClickCount + 1);
-    console.log("Player Name is : " + name);
-    socket.emit("emit", name);
+    if (randomClickCount < 1) {
+      setRandomClickCount(randomClickCount + 1);
+      console.log(randomClickCount);
+      console.log("Player Name is : " + name);
+      socket.emit("emit", name);
+    }
   };
 
   //*Join Room with Room Code
@@ -157,6 +167,7 @@ export default function OnlinePlayerPage() {
                       <button
                         className="matchMakingRandom"
                         onClick={initiateRandomMatchMaking}
+                        disabled={randomClickCount >= 1}
                       >
                         Random
                       </button>

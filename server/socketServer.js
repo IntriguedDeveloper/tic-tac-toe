@@ -71,11 +71,12 @@ io.on("connection", async (socket) => {
     }
     socket.to(faceDetails.roomName).emit("playerResponse", faceDetails);
   });
-  socket.on("resetPlayerCreds", (winnerName, roomName) => {
+  socket.on("backToLobby", (winnerName, roomName) => {
     roomPosMap.set(roomName, {
       posX: [],
       posO: [],
     });
+    socket.emit("backToLobbyClient");
   });
   socket.on("initRematch", (winnerName, roomName) => {
     roomPosMap.set(roomName, {

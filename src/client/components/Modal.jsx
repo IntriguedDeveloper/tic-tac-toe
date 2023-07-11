@@ -11,7 +11,7 @@ export default function Modal({ winTitle, winnerName, roomName }) {
   function backToLobby() {
     navigate(-1);
     socket.disconnect();
-    socket.emit('resetPlayerCreds', winnerName, roomName);
+    socket.emit('backToLobby', winnerName, roomName);
   }
   return (
     <div className="modalContainer">
